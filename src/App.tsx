@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { ChangeEvent } from 'react';
+import convertAudio from './convertAudio';
+import { IConvertedAudio, TAudioFormat } from './types';
 
-function App() {
+const App = () => {
+
+  const convertToAudio = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event?.target?.files?.length && event?.target?.files?.length > 0) {
+      let sourceVideoFile: File = event.target.files[0];
+      let targetAudioFormat: TAudioFormat = "wav";
+      const convertedAudioDataObj: IConvertedAudio | void = await convertAudio(sourceVideoFile, targetAudioFormat);
+
+      if(convertedAudioDataObj) {
+        let a = document.createElement("a");
+        a.href = convertedAudioDataObj.data;
+        a.download = convertedAudioDataObj.name + "." + convertedAudioDataObj.format;
+        a.click();
+      }
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <input type='file' accept=".mp4, .avi, .mov" onChange={convertToAudio} />
+
     </div>
   );
 }
